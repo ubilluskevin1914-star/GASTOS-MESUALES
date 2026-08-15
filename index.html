@@ -1,1 +1,129 @@
-<!DOCTYPE html><html lang='es'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Gastos Mensuales</title><link rel='manifest' href='manifest.json'><link rel='stylesheet' href='styles.css'></head><body><div class='header'><h1>💰 Gastos Mensuales</h1><p>Dashboard tipo BudgetTrack</p></div><div class='grid'><div class='card'><small>Ingresos</small><h2 id='i'>S/ 0.00</h2></div><div class='card'><small>Gastos</small><h2 id='g'>S/ 0.00</h2></div></div><div class='card'><h3>Registrar movimiento</h3><select id='t'><option>Gasto</option><option>Ingreso</option></select><input id='d' placeholder='Descripción'><input id='m' type='number' placeholder='Monto'><button onclick='add()'>Guardar</button></div><div class='card'><h3>Movimientos</h3><div id='l'></div></div><script src='app.js'></script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Gastos Mensuales</title>
+<style>
+body{margin:0;font-family:-apple-system;background:#EEF4FA}
+.header{background:#123B63;color:#fff;padding:24px;border-radius:0 0 24px 24px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px}
+.card{background:#fff;border-radius:18px;padding:14px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.k{font-size:12px;color:#64748B}
+.v{font-size:22px;font-weight:bold}
+.section{padding:0 16px 16px}
+input,select,button{width:100%;padding:12px;margin-top:8px;border-radius:12px;border:1px solid #D6E0EA}
+button{background:#123B63;color:#fff;border:none}
+.row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #EEE}
+.nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#FFF;border-top:1px solid #DDD}
+.nav button{flex:1;padding:12px;background:#FFF;border:none}
+.page{display:none}.on{display:block}
+</style>
+</head>
+<body>
+
+<div id="home" class="page on">
+<div class="header">
+<h1>💰 Gastos Mensuales</h1>
+<p>Dashboard Premium</p>
+</div>
+
+<div class="grid">
+<div class="card"><div class="k">Ingresos</div><div id="ing" class="v" style="color:#16A34A">S/0.00</div></div>
+<div class="card"><div class="k">Gastos</div><div id="gas" class="v" style="color:#DC2626">S/0.00</div></div>
+<div class="card"><div class="k">Ahorro</div><div id="sav" class="v" style="color:#F59E0B">S/0.00</div></div>
+<div class="card"><div class="k">Disponible</div><div id="dis" class="v" style="color:#0EA5E9">S/0.00</div></div>
+</div>
+
+<div class="section">
+<div class="card">
+<h3>Movimientos</h3>
+<div id="lista"></div>
+</div>
+</div>
+</div>
+
+<div id="add" class="page">
+<div class="header"><h2>➕ Registrar</h2></div>
+<div class="section">
+<div class="card">
+<select id="tipo">
+<option>Gasto</option>
+<option>Ingreso</option>
+</select>
+
+<select id="cat">
+<option>Alimentación</option>
+<option>Transporte</option>
+<option>Vivienda</option>
+<option>Salud</option>
+<option>Otros</option>
+</select>
+
+<input id="desc" placeholder="Descripción">
+<input id="monto" type="number" placeholder="Monto">
+
+<button onclick="guardar()">Guardar movimiento</button>
+</div>
+</div>
+</div>
+
+<div class="nav">
+<button onclick="cambiar('home')">🏠</button>
+<button onclick="cambiar('add')">➕</button>
+</div>
+
+<script>
+let db=JSON.parse(localStorage.getItem("gastos")||"[]");
+
+function cambiar(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("on"));
+document.getElementById(id).classList.add("on");
+}
+
+function guardar(){
+let m=parseFloat(monto.value||0);
+if(!m)return;
+
+db.push({
+t:tipo.value,
+c:cat.value,
+d:desc.value||"Sin descripción",
+m:m
+});
+
+localStorage.setItem("gastos",JSON.stringify(db));
+
+desc.value="";
+monto.value="";
+
+render();
+cambiar("home");
+}
+
+function render(){
+let ing=0,gas=0;
+lista.innerHTML="";
+
+[...db].reverse().forEach(x=>{
+lista.innerHTML+=`
+<div class="row">
+<span>${x.d}</span>
+<b>${x.t=="Gasto"?"-":"+"}S/${x.m.toFixed(2)}</b>
+</div>`;
+
+if(x.t=="Ingreso") ing+=x.m;
+else gas+=x.m;
+});
+
+ing.textContent="S/"+ing.toFixed(2);
+gas.textContent="S/"+gas.toFixed(2);
+sav.textContent="S/"+(ing-gas).toFixed(2);
+dis.textContent="S/"+(ing-gas).toFixed(2);
+}
+
+render();
+</script>
+
+</body>
+</html>
