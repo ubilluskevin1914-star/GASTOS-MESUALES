@@ -1,4 +1,4 @@
-// ===== GASTOS MENSUALES v3 =====
+const API = "https://script.google.com/macros/s/AKfycbxS_K0pPvc3U63d1p-DOUTogbbdhRvzyQTr4y2avyuoZzmgAZ9dlzlUfrW8G_U2B0BI/exec";
 
 let db = JSON.parse(localStorage.getItem("gastos") || "[]");
 
@@ -27,17 +27,43 @@ function guardarPresupuesto(){
   alert("Presupuesto guardado");
 }
 
-function agregarMovimiento(){
+async function agregarMovimiento() {
 
   const tipo = document.getElementById("tipo").value;
-  const cat  = document.getElementById("cat").value;
-  const desc = document.getElementById("desc").value || "Sin descripción";
-  const monto= Number(document.getElementById("monto").value);
+  const categoria = document.getElementById("cat").value;
+  const descripcion = document.getElementById("desc").value || "Sin descripción";
+  const monto = Number(document.getElementById("monto").value);
 
-  if(monto<=0){
+  if (monto <= 0) {
     alert("Ingresa un monto válido");
     return;
   }
+
+  const movimiento = {
+    tipo,
+    categoria,
+    descripcion,
+    monto,
+    metodo: "Yape"
+  };
+
+  await fetch(API, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(movimiento)
+  });
+
+  db.push(movimiento);
+  guardarBD();
+  actualizar();
+
+  document.getElementById("desc").value = "";
+  document.getElementById("monto").value = "";
+
+  cambiar("home");
+}
 
   db.push({
     fecha:new Date().toISOString(),
