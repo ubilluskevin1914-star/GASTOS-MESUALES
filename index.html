@@ -37,6 +37,31 @@ button{background:#123B63;color:#fff;border:none}
 
 <div class="section">
 <div class="card">
+  <h3>📊 Distribución de gastos</h3>
+
+<canvas id="grafico" width="300" height="220"></canvas>
+
+<div class="row">
+  <span>🍔 Alimentación</span>
+  <b id="g_alim">S/0</b>
+</div>
+
+<div class="row">
+  <span>🚗 Transporte</span>
+  <b id="g_trans">S/0</b>
+</div>
+
+<div class="row">
+  <span>🏠 Vivienda</span>
+  <b id="g_viv">S/0</b>
+</div>
+
+<div class="row">
+  <span>❤️ Salud</span>
+  <b id="g_salud">S/0</b>
+</div>
+
+<hr>
 <h3>Movimientos</h3>
 <div id="lista"></div>
 </div>
@@ -181,6 +206,61 @@ dis.textContent="S/"+(ing-gas).toFixed(2);
 }
 
 render();
+  function dibujarGrafico(alim, trans, viv, salud){
+
+ const c = document.getElementById("grafico");
+ if(!c) return;
+
+ const ctx = c.getContext("2d");
+
+ ctx.clearRect(0,0,300,220);
+
+ const datos=[alim,trans,viv,salud];
+ const colores=["#16A34A","#0EA5E9","#F59E0B","#EF4444"];
+
+ const total=datos.reduce((a,b)=>a+b,0);
+
+ if(total===0){
+
+   ctx.fillStyle="#64748B";
+   ctx.font="16px Arial";
+   ctx.textAlign="center";
+   ctx.fillText("Sin gastos",150,110);
+
+   return;
+ }
+
+ let inicio=0;
+
+ datos.forEach((v,i)=>{
+
+   const ang=(v/total)*Math.PI*2;
+
+   ctx.beginPath();
+   ctx.moveTo(150,100);
+   ctx.arc(150,100,70,inicio,inicio+ang);
+   ctx.closePath();
+
+   ctx.fillStyle=colores[i];
+   ctx.fill();
+
+   inicio+=ang;
+
+ });
+
+ ctx.beginPath();
+ ctx.arc(150,100,35,0,Math.PI*2);
+ ctx.fillStyle="white";
+ ctx.fill();
+
+ ctx.fillStyle="#123B63";
+ ctx.font="bold 12px Arial";
+ ctx.textAlign="center";
+ ctx.fillText("S/"+total,150,98);
+ ctx.font="10px Arial";
+ ctx.fillText("Total",150,112);
+
+}
 </script>
 
 </body>
