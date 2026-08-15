@@ -150,10 +150,90 @@ button{background:#123B63;color:#fff;border:none}
   </div>
 
 </div>
-<div class="nav">
-  <button onclick="cambiar('home')">🏠</button>
-  <button onclick="cambiar('add')">➕</button>
-  <button onclick="cambiar('budget')">📊</button>
+<div id="meta" class="page">
+
+<div class="header">
+<h2>🎯 Meta de ahorro</h2>
+</div>
+
+<div class="section">
+
+<div class="card">
+
+<label>Objetivo mensual</label>
+
+<input id="metaMonto" type="number" value="1000">
+
+<button onclick="guardarMeta()">
+Guardar meta
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>Progreso</h3>
+
+<div style="background:#E5E7EB;height:18px;border-radius:20px;overflow:hidden">
+
+<div id="barraMeta"
+style="height:100%;width:0%;background:#16A34A">
+</div>
+
+</div>
+
+<p id="textoMeta">0%</p>
+
+</div>
+
+</div>
+
+</div>
+  <div id="config" class="page">
+
+<div class="header">
+<h2>⚙️ Ajustes</h2>
+</div>
+
+<div class="section">
+
+<div class="card">
+
+<label>Color principal</label>
+
+<input type="color" id="colorApp" value="#123B63">
+
+<button onclick="cambiarColor()">
+Aplicar color
+</button>
+
+</div>
+
+</div>
+
+</div>
+  <div class="nav">
+
+  <button onclick="cambiar('home')">
+    🏠<br><small>Inicio</small>
+  </button>
+
+  <button onclick="cambiar('add')">
+    ➕<br><small>Agregar</small>
+  </button>
+
+  <button onclick="cambiar('budget')">
+    📊<br><small>Presupuesto</small>
+  </button>
+
+  <button onclick="cambiar('meta')">
+    🎯<br><small>Meta</small>
+  </button>
+
+  <button onclick="cambiar('config')">
+    ⚙️<br><small>Ajustes</small>
+  </button>
+
 </div>
 
 <script>
