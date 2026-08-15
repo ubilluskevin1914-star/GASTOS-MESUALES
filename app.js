@@ -47,6 +47,40 @@ async function agregarMovimiento() {
     metodo: "Yape"
   };
 
+  // Guarda en Google Sheets
+  await fetch(API, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify(movimiento)
+  });
+
+  // Guarda localmente para ver el cambio inmediato
+  db.push({
+    t: tipo,
+    c: categoria,
+    d: descripcion,
+    m: monto
+  });
+
+  localStorage.setItem("gastos", JSON.stringify(db));
+
+  document.getElementById("desc").value = "";
+  document.getElementById("monto").value = "";
+
+  render();
+  cambiar("home");
+}
+
+  const movimiento = {
+    tipo,
+    categoria,
+    descripcion,
+    monto,
+    metodo: "Yape"
+  };
+
   await fetch(API, {
     method: "POST",
     headers: {
