@@ -67,10 +67,68 @@ button{background:#123B63;color:#fff;border:none}
 </div>
 </div>
 </div>
+<!-- PANTALLA PRESUPUESTO -->
+<div id="budget" class="page">
 
+  <div class="header">
+    <h2>📊 Presupuesto</h2>
+    <p>Control mensual por categoría</p>
+  </div>
+
+  <div class="section">
+
+    <div class="card">
+      <h3>💰 Presupuesto del mes</h3>
+
+      <label>Alimentación</label>
+      <input type="number" id="p_alim" value="600">
+
+      <label>Transporte</label>
+      <input type="number" id="p_trans" value="250">
+
+      <label>Vivienda</label>
+      <input type="number" id="p_viv" value="1200">
+
+      <label>Salud</label>
+      <input type="number" id="p_salud" value="150">
+
+      <button onclick="guardarPresupuesto()">
+        Guardar presupuesto
+      </button>
+    </div>
+
+    <div class="card">
+      <h3>📈 Resumen</h3>
+
+      <div class="row">
+        <span>Alimentación</span>
+        <b id="r_alim">S/0</b>
+      </div>
+
+      <div class="row">
+        <span>Transporte</span>
+        <b id="r_trans">S/0</b>
+      </div>
+
+      <div class="row">
+        <span>Vivienda</span>
+        <b id="r_viv">S/0</b>
+      </div>
+
+      <div class="row">
+        <span>Salud</span>
+        <b id="r_salud">S/0</b>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 <div class="nav">
-<button onclick="cambiar('home')">🏠</button>
-<button onclick="cambiar('add')">➕</button>
+  <button onclick="cambiar('home')">🏠</button>
+  <button onclick="cambiar('add')">➕</button>
+  <button onclick="cambiar('budget')">📊</button>
 </div>
 
 <script>
