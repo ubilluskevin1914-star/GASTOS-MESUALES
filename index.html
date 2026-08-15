@@ -88,7 +88,7 @@ button{background:#123B63;color:#fff;border:none}
 <input id="desc" placeholder="Descripción">
 <input id="monto" type="number" placeholder="Monto">
 
-<button onclick="agregarMovimiento()">Guardar movimiento</button>
+<button onclick="guardar()">Guardar movimiento</button>
 </div>
 </div>
 </div>
@@ -237,111 +237,162 @@ Aplicar color
 </div>
 
 <script>
-let db=JSON.parse(localStorage.getItem("gastos")||"[]");
+let db = JSON.parse(localStorage.getItem("gastos") || "[]");
+let presupuesto = JSON.parse(localStorage.getItem("presupuesto") || "{}");
 
 function cambiar(id){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("on"));
-document.getElementById(id).classList.add("on");
+  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+  document.getElementById(id).style.display="block";
 }
 
 function guardar(){
-let m=parseFloat(monto.value||0);
-if(!m)return;
 
-db.push({
-t:tipo.value,
-c:cat.value,
-d:desc.value||"Sin descripción",
-m:m
-});
+  const tipo = document.getElementById("tipo").value;
+  const cat = document.getElementById("cat").value;
+  const desc = document.getElementById("desc").value || "Sin descripción";
+  const monto = Number(document.getElementById("monto").value);
 
-localStorage.setItem("gastos",JSON.stringify(db));
+  if(monto<=0){
+    alert("Ingresa un monto");
+    return;
+  }
 
-desc.value="";
-monto.value="";
+  db.push({t:tipo,c:cat,d:desc,m:monto});
 
-render();
-cambiar("home");
+  localStorage.setItem("gastos",JSON.stringify(db));
+
+  document.getElementById("desc").value="";
+  document.getElementById("monto").value="";
+
+  render();
+  cambiar("home");
+}
+
+function guardarPresupuesto(){
+
+  presupuesto={
+    "Alimentación":Number(p_alim.value),
+    "Transporte":Number(p_trans.value),
+    "Vivienda":Number(p_viv.value),
+    "Salud":Number(p_salud.value)
+  };
+
+  localStorage.setItem("presupuesto",JSON.stringify(presupuesto));
+
+  alert("Presupuesto guardado");
+}
+
+function cambiarColor(){
+
+  const color=document.getElementById("colorApp").value;
+
+  document.querySelector(".header").style.background=color;
+
+  localStorage.setItem("color",color);
+
+}
+
+function dibujarGrafico(a,t,v,s){
+
+  const c=document.getElementById("grafico");
+  if(!c) return;
+
+  const ctx=c.getContext("2d");
+
+  ctx.clearRect(0,0,300,220);
+
+  const datos=[a,t,v,s];
+  const colores=["#16A34A","#0EA5E9","#F59E0B","#EF4444"];
+
+  const total=datos.reduce((x,y)=>x+y,0);
+
+  if(total==0){
+    ctx.fillStyle="#64748B";
+    ctx.font="16px Arial";
+    ctx.textAlign="center";
+    ctx.fillText("Sin gastos",150,110);
+    return;
+  }
+
+  let ini=0;
+
+  datos.forEach((d,i)=>{
+    const ang=(d/total)*Math.PI*2;
+
+    ctx.beginPath();
+    ctx.moveTo(150,100);
+    ctx.arc(150,100,70,ini,ini+ang);
+    ctx.closePath();
+    ctx.fillStyle=colores[i];
+    ctx.fill();
+
+    ini+=ang;
+  });
+
+  ctx.beginPath();
+  ctx.arc(150,100,35,0,Math.PI*2);
+  ctx.fillStyle="white";
+  ctx.fill();
 }
 
 function render(){
-let ing=0,gas=0;
-lista.innerHTML="";
 
-[...db].reverse().forEach(x=>{
-lista.innerHTML+=`
-<div class="row">
-<span>${x.d}</span>
-<b>${x.t=="Gasto"?"-":"+"}S/${x.m.toFixed(2)}</b>
-</div>`;
+  let ingresos=0,gastos=0;
+  let alim=0,trans=0,viv=0,salud=0;
 
-if(x.t=="Ingreso") ing+=x.m;
-else gas+=x.m;
-});
+  lista.innerHTML="";
 
-ing.textContent="S/"+ing.toFixed(2);
-gas.textContent="S/"+gas.toFixed(2);
-sav.textContent="S/"+(ing-gas).toFixed(2);
-dis.textContent="S/"+(ing-gas).toFixed(2);
+  [...db].reverse().forEach(x=>{
+
+    lista.innerHTML+=`
+      <div class="row">
+        <div>
+          <b>${x.d}</b><br>
+          <small>${x.c}</small>
+        </div>
+        <div>${x.t=="Gasto"?"-":"+"}S/${x.m.toFixed(2)}</div>
+      </div>`;
+
+    if(x.t=="Ingreso"){
+      ingresos+=x.m;
+    }else{
+      gastos+=x.m;
+
+      if(x.c=="Alimentación") alim+=x.m;
+      if(x.c=="Transporte") trans+=x.m;
+      if(x.c=="Vivienda") viv+=x.m;
+      if(x.c=="Salud") salud+=x.m;
+    }
+
+  });
+
+  ing.textContent="S/"+ingresos.toFixed(2);
+  gas.textContent="S/"+gastos.toFixed(2);
+  sav.textContent="S/"+(ingresos-gastos).toFixed(2);
+  dis.textContent="S/"+(ingresos-gastos).toFixed(2);
+
+  g_alim.textContent="S/"+alim;
+  g_trans.textContent="S/"+trans;
+  g_viv.textContent="S/"+viv;
+  g_salud.textContent="S/"+salud;
+
+  r_alim.textContent=`S/${alim} / ${presupuesto["Alimentación"]||0}`;
+  r_trans.textContent=`S/${trans} / ${presupuesto["Transporte"]||0}`;
+  r_viv.textContent=`S/${viv} / ${presupuesto["Vivienda"]||0}`;
+  r_salud.textContent=`S/${salud} / ${presupuesto["Salud"]||0}`;
+
+  dibujarGrafico(alim,trans,viv,salud);
+
+}
+
+const color=localStorage.getItem("color");
+if(color){
+  document.querySelector(".header").style.background=color;
 }
 
 render();
-  function dibujarGrafico(alim, trans, viv, salud){
-
- const c = document.getElementById("grafico");
- if(!c) return;
-
- const ctx = c.getContext("2d");
-
- ctx.clearRect(0,0,300,220);
-
- const datos=[alim,trans,viv,salud];
- const colores=["#16A34A","#0EA5E9","#F59E0B","#EF4444"];
-
- const total=datos.reduce((a,b)=>a+b,0);
-
- if(total===0){
-
-   ctx.fillStyle="#64748B";
-   ctx.font="16px Arial";
-   ctx.textAlign="center";
-   ctx.fillText("Sin gastos",150,110);
-
-   return;
- }
-
- let inicio=0;
-
- datos.forEach((v,i)=>{
-
-   const ang=(v/total)*Math.PI*2;
-
-   ctx.beginPath();
-   ctx.moveTo(150,100);
-   ctx.arc(150,100,70,inicio,inicio+ang);
-   ctx.closePath();
-
-   ctx.fillStyle=colores[i];
-   ctx.fill();
-
-   inicio+=ang;
-
- });
-
- ctx.beginPath();
- ctx.arc(150,100,35,0,Math.PI*2);
- ctx.fillStyle="white";
- ctx.fill();
-
- ctx.fillStyle="#123B63";
- ctx.font="bold 12px Arial";
- ctx.textAlign="center";
- ctx.fillText("S/"+total,150,98);
- ctx.font="10px Arial";
- ctx.fillText("Total",150,112);
-
-}
+cambiar("home");
 </script>
-
+  
 </body>
 </html>
