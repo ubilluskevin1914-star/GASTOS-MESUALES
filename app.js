@@ -22,7 +22,7 @@ function guardarPresupuesto(){
 
   localStorage.setItem("presupuesto", JSON.stringify(presupuesto));
 
-  actualizar();
+ actualizar(); cambiar("home");
 
   alert("Presupuesto guardado");
 }
@@ -57,7 +57,7 @@ async function agregarMovimiento() {
 
   db.push(movimiento);
   guardarBD();
-  actualizar();
+ actualizar(); cambiar("home");
 
   document.getElementById("desc").value = "";
   document.getElementById("monto").value = "";
@@ -78,7 +78,7 @@ async function agregarMovimiento() {
   document.getElementById("desc").value="";
   document.getElementById("monto").value="";
 
-  actualizar();
+ actualizar(); cambiar("home");
 
   cambiar("home");
 }
@@ -142,12 +142,21 @@ dibujarGrafico(alim,trans,viv,salud);
 
 function cambiar(id){
 
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("on"));
+  document.querySelectorAll(".page").forEach(p=>{
+    p.style.display="none";
+    p.classList.remove("on");
+  });
 
-  document.getElementById(id).classList.add("on");
+  const pagina=document.getElementById(id);
+
+  if(pagina){
+    pagina.style.display="block";
+    pagina.classList.add("on");
+  }
+
 }
 
-actualizar();
+actualizar(); cambiar("home"); cambiar("home");
 let meta = Number(localStorage.getItem("meta") || 1000);
 
 function guardarMeta(){
