@@ -122,3 +122,61 @@ function cambiar(id){
 }
 
 actualizar();
+let meta = Number(localStorage.getItem("meta") || 1000);
+
+function guardarMeta(){
+
+ meta = Number(document.getElementById("metaMonto").value);
+
+ localStorage.setItem("meta",meta);
+
+ actualizarMeta();
+
+}
+
+function actualizarMeta(){
+
+ let ingresos=0;
+ let gastos=0;
+
+ db.forEach(x=>{
+
+   if(x.tipo==="Ingreso")
+     ingresos+=x.monto;
+   else
+     gastos+=x.monto;
+
+ });
+
+ const ahorro=Math.max(0,ingresos-gastos);
+
+ const p=Math.min(100,(ahorro/meta)*100);
+
+ document.getElementById("barraMeta").style.width=p+"%";
+
+ document.getElementById("textoMeta").innerHTML=
+ `${p.toFixed(0)}% • S/${ahorro} de S/${meta}`;
+
+ document.getElementById("metaMonto").value=meta;
+
+}
+
+function cambiarColor(){
+
+ const c=document.getElementById("colorApp").value;
+
+ document.documentElement.style.setProperty("--primary",c);
+
+ localStorage.setItem("color",c);
+
+}
+
+const colorGuardado=localStorage.getItem("color");
+
+if(colorGuardado){
+
+ document.documentElement.style.setProperty("--primary",colorGuardado);
+
+}
+
+actualizarMeta();
