@@ -102,7 +102,12 @@ function actualizar(){
   document.getElementById("r_trans").textContent=`S/${trans} / ${presupuesto["Transporte"]}`;
   document.getElementById("r_viv").textContent=`S/${viv} / ${presupuesto["Vivienda"]}`;
   document.getElementById("r_salud").textContent=`S/${salud} / ${presupuesto["Salud"]}`;
+document.getElementById("g_alim").textContent="S/"+alim;
+document.getElementById("g_trans").textContent="S/"+trans;
+document.getElementById("g_viv").textContent="S/"+viv;
+document.getElementById("g_salud").textContent="S/"+salud;
 
+dibujarGrafico(alim,trans,viv,salud);
   document.getElementById("p_alim").value=presupuesto["Alimentación"];
   document.getElementById("p_trans").value=presupuesto["Transporte"];
   document.getElementById("p_viv").value=presupuesto["Vivienda"];
